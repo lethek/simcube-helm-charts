@@ -56,6 +56,8 @@ spec:
                  key: sapassword
             - name: MSSQL_DATA_DIR
               value: {{ .Values.dataDir }}
+            - name: MSSQL_BACKUP_DIR
+              value: {{ .Values.backupDir }}
             - name: MSSQL_TCP_PORT
               value: "{{ .Values.service.port }}"
             - name: MSSQL_COLLATION
@@ -76,7 +78,9 @@ spec:
               containerPort: {{ .Values.service.port }}
           volumeMounts:
             - name: data
-              mountPath: /var/opt/mssql
+              mountPath: /var/opt/mssql/data
+            - name: backups
+              mountPath: /var/opt/mssql/backups
           livenessProbe:
              tcpSocket:
                port: mssql
@@ -101,6 +105,17 @@ spec:
           claimName: {{ .Values.persistence.existingDataClaim }}
           {{- else }}
           claimName: {{ template "mssql.fullname" . }}-data
+          {{- end -}}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      - name: backups
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          {{- if .Values.persistence.existingBackupsClaim }}
+          claimName: {{ .Values.persistence.existingBackupsClaim }}
+          {{- else }}
+          claimName: {{ template "mssql.fullname" . }}-backups
           {{- end -}}
       {{- else }}
         emptyDir: {}

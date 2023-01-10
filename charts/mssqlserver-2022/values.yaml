@@ -3,7 +3,8 @@ acceptEula:
 edition:
   value: Developer
 collation: SQL_Latin1_General_CP1_CI_AS
-dataDir: /var/opt/mssql
+dataDir: /var/opt/mssql/data
+backupDir: /var/opt/mssql/backups
 lcid: 1033
 hadr: 0
 replicaCount: 1
@@ -31,9 +32,12 @@ pod:
 persistence:
   enabled: true
   # existingDataClaim:
+  # existingBackupsClaim:
   storageClass: ""
   dataAccessMode: ReadWriteOnce
   dataSize: 1Gi
+  backupsAccessMode: ReadWriteOnce
+  backupsSize: 1Gi
 livenessprobe:
   initialDelaySeconds: 15
   periodSeconds: 20
